@@ -36,14 +36,14 @@ train_imgs = np.reshape(train_imgs,[-1,28,28,1])
 test_imgs = np.reshape(test_imgs,[-1,28,28,1])
 
 
-# In[28]:
+# In[3]:
 
 
 train_imgs.shape,test_imgs.shape,train_labels.shape
 # test_imgs
 
 
-# In[48]:
+# In[12]:
 
 
 STAGES = np.array(["s1","s2"]) # S
@@ -58,13 +58,25 @@ for nn in NUM_NODES:
     L += t
 L = int(0.5 * L)
 
-TRAINING_EPOCHS = 500
-BATCH_SIZE = 100
+TRAINING_EPOCHS = 20
+BATCH_SIZE = 20
 TOTAL_BATCHES = train_imgs.shape[0] // BATCH_SIZE
-lr=.001
 
 
-# In[49]:
+# In[16]:
+
+
+def initial_learning_rate(epoch=0):
+    if (epoch >= 0) and (epoch <13 ):
+        return 0.001
+    if (epoch >= 13) and (epoch <16 ):
+        return 0.00001
+    if (epoch >= 16):
+        return 0.000001
+epoch=0
+
+
+# In[17]:
 
 
 def weight_variable(weight_name, weight_shape):
@@ -201,7 +213,7 @@ def generate_tensorflow_graph(individual,stages,num_nodes,bits_indices):
     
     xentropy =  tf.nn.softmax_cross_entropy_with_logits(logits = logits, labels = Y)
     loss_function = tf.reduce_mean(xentropy)
-    optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(loss_function) 
+    optimizer = tf.train.AdamOptimizer(learning_rate=initial_learning_rate(epoch)).minimize(loss_function) 
     accuracy = tf.reduce_mean(tf.cast( tf.equal(tf.argmax(tf.nn.softmax(logits),1), tf.argmax(Y,1)), tf.float32))
     
     return  X, Y, optimizer, loss_function, accuracy
